@@ -16,8 +16,6 @@ class BluetoothProvider extends ChangeNotifier {
   String devicename = '';
   double samplingRate = 0;
   String middleSymbol = " ";
-  // String characteristicsUid = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
-  // String serviceId = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
   String serviceId = 'df292a60-ddfa-428d-86aa-c7fc913276c4';
   String characteristicsUid = 'dc1a14aa-f905-4432-a142-161937fca521';
   String? value;
@@ -31,7 +29,6 @@ class BluetoothProvider extends ChangeNotifier {
   List<String> rawValues = [];
   double initialTime = -1, finalTime = -1;
 
-  //  charValue(String deviceId) =>
   bool useAdvertiseConnect = true;
 
   BluetoothProvider() {
@@ -44,8 +41,6 @@ class BluetoothProvider extends ChangeNotifier {
     ].request();
     listenConnectionState(BluetoothDevice.fromId(deviceId));
   }
-
-  //Start_scan
 
   Future<void> startScan() async {
     _discoverResults.clear();
@@ -76,14 +71,15 @@ class BluetoothProvider extends ChangeNotifier {
   Future<void> connect() async {
     device_connecting = true;
     notifyListeners();
+    print("Connect is called");
     try {
+      print("try is called");
       BluetoothDevice connectedDevice = BluetoothDevice.fromId(deviceId);
       connectedDevice.connect(
           autoConnect: false,
           shouldClearGattCache: true,
           timeout: const Duration(seconds: 5));
     } catch (e) {
-      // changeConnection(connectingState: false, connectedState: false);
       print(e);
     }
     notifyListeners();
@@ -107,12 +103,15 @@ class BluetoothProvider extends ChangeNotifier {
   }
 
   Future<void> discoverCharacteristics(BluetoothDevice connectedDevice) async {
+    print("discover char is called");
     List<BluetoothService> services = await connectedDevice.discoverServices();
     BluetoothCharacteristic? characteristics = getCharacteristics(services);
     if (characteristics != null) {
-      connectedDeviceStream = characteristics.onValueChangedStream.listen(null);
-      connectedDeviceStream?.onData((data) => addValues(utf8.decode(data)));
-      connectedDeviceStream?.onDone(clearValues);
+      print("characteristic is not null");
+      connectedDeviceStream = characteristics.value.listen((data) {
+        addValues(utf8.decode(data));
+      }, onDone: clearValues);
+      await characteristics.setNotifyValue(true);
     }
   }
 
@@ -133,6 +132,7 @@ class BluetoothProvider extends ChangeNotifier {
   }
 
   void addValues(String value) {
+    print("add value called");
     if (values.length > 100) {
       values.removeAt(0);
     }
@@ -142,7 +142,6 @@ class BluetoothProvider extends ChangeNotifier {
       rawValues.removeAt(0);
     }
     if (rawValues.isEmpty) return;
-    //calculate for sampling rate
     if (initialTime == -1) {
       initialTime =
           double.tryParse(rawValues.first.split(middleSymbol).last) ?? -1;
@@ -152,16 +151,14 @@ class BluetoothProvider extends ChangeNotifier {
         '${rawValues.first.split(middleSymbol).last}|${rawValues.last.split(middleSymbol).last}');
     samplingRate = ((rawValues.length) / (finalTime - initialTime)) * 1000;
     notifyListeners();
+    print("add value over");
   }
 
   Future<void> onChangedDeviceState(BluetoothDeviceState state) async {
     switch (state) {
       case BluetoothDeviceState.connected:
         changeConnection(connectedState: true, connectingState: false);
-        BluetoothDevice connectedDevice = await _flutterBluetooth
-            .connectedDevices
-            .then((value) => value.first);
-        await discoverCharacteristics(connectedDevice);
+        callbyclick();
         return;
       case BluetoothDeviceState.connecting:
         changeConnection(connectedState: false, connectingState: true);
@@ -193,5 +190,11 @@ class BluetoothProvider extends ChangeNotifier {
     samplingRate = 0.0;
     initialTime = -1;
     finalTime = -1;
+  }
+
+  Future<void> callbyclick() async {
+    BluetoothDevice connectedDevice =
+        await _flutterBluetooth.connectedDevices.then((value) => value.first);
+    await discoverCharacteristics(connectedDevice);
   }
 }

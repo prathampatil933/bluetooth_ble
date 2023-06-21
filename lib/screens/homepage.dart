@@ -18,7 +18,6 @@ class _BluetoothPageState extends State<BluetoothPage> {
   void initState() {
     super.initState();
     // Permission to location and nearby devices
-    
   }
 
   @override
@@ -35,42 +34,47 @@ class _BluetoothPageState extends State<BluetoothPage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () async {
-                            if (!provider.isScanning) {
-                              provider.startScan();
-                            }
-                          },
-                          child: const Text("Start Scan"),
-                        ),
-                        ElevatedButton(
-                          onPressed: () async {
-                            if (provider.isScanning) {
-                              provider.stopScan();
-                            }
-                          },
-                          child: const Text("Stop Scan"),
-                        ),
-                        ElevatedButton(
-                          onPressed: () async {
-                            await provider.connect();
-                          },
-                          child: const Text("Connect"),
-                        ),
-                        ElevatedButton(
-                          onPressed: () async {
-                            await provider.disconnect();
-                          },
-                          child: const Text("Disconnect"),
-                        ),
-                      ],
-                    ),
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () async {
+                              if (!provider.isScanning) {
+                                provider.startScan();
+                              }
+                            },
+                            child: const Text("Start Scan"),
+                          ),
+                          ElevatedButton(
+                            onPressed: () async {
+                              if (provider.isScanning) {
+                                provider.stopScan();
+                              }
+                            },
+                            child: const Text("Stop Scan"),
+                          ),
+                          ElevatedButton(
+                            onPressed: () async {
+                              await provider.connect();
+                            },
+                            child: const Text("Connect"),
+                          ),
+                          ElevatedButton(
+                            onPressed: () async {
+                              await provider.disconnect();
+                            },
+                            child: const Text("Disconnect"),
+                          ),
+                        ]),
                   ),
                   const SizedBox(
                     height: 10,
                   ),
+                  // ElevatedButton(
+                  //         onPressed: () async {
+                  //           await provider.callbyclick();
+                  //         },
+                  //         child: const Text("Repeat"),
+                  //       ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Row(
@@ -216,9 +220,9 @@ class _BluetoothPageState extends State<BluetoothPage> {
                   const SizedBox(
                     height: 25,
                   ),
-                  Text(
+                  const Text(
                     '  First sensor     Second sensor   Seconds(milli)',
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16),
                   ),
                   SizedBox(
                     height: 550,
