@@ -22,6 +22,7 @@ class _BluetoothPageState extends State<BluetoothPage> {
 
   @override
   Widget build(BuildContext context) {
+    //Interface design of application
     return Scaffold(
       body: SafeArea(
         child: Consumer<BluetoothProvider>(builder: (context, provider, child) {
@@ -34,6 +35,7 @@ class _BluetoothPageState extends State<BluetoothPage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Row(
+                        //primary buttons for scanning and connection.
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           ElevatedButton(
@@ -69,12 +71,7 @@ class _BluetoothPageState extends State<BluetoothPage> {
                   const SizedBox(
                     height: 10,
                   ),
-                  // ElevatedButton(
-                  //         onPressed: () async {
-                  //           await provider.callbyclick();
-                  //         },
-                  //         child: const Text("Repeat"),
-                  //       ),
+
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Row(
@@ -129,7 +126,7 @@ class _BluetoothPageState extends State<BluetoothPage> {
                   //                 ),
                   //               )),
                   //   ),
-                  // ),
+                  // ),    //Displaying the systems scanned through bluetooth.
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Row(
@@ -140,7 +137,7 @@ class _BluetoothPageState extends State<BluetoothPage> {
                             value: provider.useAdvertiseConnect,
                             onChanged: (value) =>
                                 provider.changeConnectMethod(value ?? false))
-                      ],
+                      ], // Switching between two mode of connection
                     ),
                   ),
                   Padding(
@@ -171,7 +168,7 @@ class _BluetoothPageState extends State<BluetoothPage> {
                         ),
                       ],
                     ),
-                  ),
+                  ), //selecting Connection of required device
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Row(
@@ -205,7 +202,8 @@ class _BluetoothPageState extends State<BluetoothPage> {
                         ),
                       ],
                     ),
-                  ),
+                  ), //validating the hardware connected or not.
+
                   // StreamBuilder<List<int>>(
                   //   stream: provider.connectedDeviceStream.,
                   //   builder: (context, snapshot) {
@@ -217,6 +215,7 @@ class _BluetoothPageState extends State<BluetoothPage> {
                   //     return const SizedBox();
                   //   },
                   // ),
+
                   const SizedBox(
                     height: 25,
                   ),
@@ -233,7 +232,7 @@ class _BluetoothPageState extends State<BluetoothPage> {
                           padding: const EdgeInsets.all(16.0),
                           child: Text(
                             provider.values[index],
-                            style: const TextStyle(fontSize: 24),
+                            style: const TextStyle(fontSize: 32),
                           ),
                         );
                       },

@@ -42,6 +42,8 @@ class BluetoothProvider extends ChangeNotifier {
     listenConnectionState(BluetoothDevice.fromId(deviceId));
   }
 
+
+  //Start scanning of the devices 
   Future<void> startScan() async {
     _discoverResults.clear();
     isScanning = true;
@@ -59,6 +61,7 @@ class BluetoothProvider extends ChangeNotifier {
     });
   }
 
+  //Stop the scanning  
   Future<void> stopScan() async {
     await _flutterBluetooth.stopScan();
     await scanSubscription?.cancel().then((value) {
@@ -68,13 +71,12 @@ class BluetoothProvider extends ChangeNotifier {
     });
   }
 
+  //connection of systems
   Future<void> connect() async {
     device_connecting = true;
     notifyListeners();
-    print("Connect is called");
     try {
-      print("try is called");
-      BluetoothDevice connectedDevice = BluetoothDevice.fromId(deviceId);
+      BluetoothDevice connectedDevice = BluetoothDevice.fromId(deviceId);    //connecting with required device
       connectedDevice.connect(
           autoConnect: false,
           shouldClearGattCache: true,
@@ -87,9 +89,11 @@ class BluetoothProvider extends ChangeNotifier {
 
   void listenConnectionState(BluetoothDevice connectedDevice) {
     connectionState = connectedDevice.state.listen(null);
-    connectionState?.onData(onChangedDeviceState);
+    connectionState?.onData(onChangedDeviceState);  //changing the state as per the connection
   }
 
+
+//Disconnect device 
   Future<void> disconnect() async {
     try {
       BluetoothDevice connectedDevice =
@@ -102,12 +106,11 @@ class BluetoothProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  //discovering the characteristics shared by the device and call addValues() to store data.
   Future<void> discoverCharacteristics(BluetoothDevice connectedDevice) async {
-    print("discover char is called");
     List<BluetoothService> services = await connectedDevice.discoverServices();
     BluetoothCharacteristic? characteristics = getCharacteristics(services);
     if (characteristics != null) {
-      print("characteristic is not null");
       connectedDeviceStream = characteristics.value.listen((data) {
         addValues(utf8.decode(data));
       }, onDone: clearValues);
@@ -126,13 +129,14 @@ class BluetoothProvider extends ChangeNotifier {
     return null;
   }
 
+  //changing connection method
   void changeConnectMethod(bool value) {
     useAdvertiseConnect = value;
     notifyListeners();
   }
 
+  //Storing values to the application and calculate sampling rate 
   void addValues(String value) {
-    print("add value called");
     if (values.length > 100) {
       values.removeAt(0);
     }
@@ -147,18 +151,17 @@ class BluetoothProvider extends ChangeNotifier {
           double.tryParse(rawValues.first.split(middleSymbol).last) ?? -1;
     }
     finalTime = double.tryParse(rawValues.last.split(middleSymbol).last) ?? -1;
-    print(
-        '${rawValues.first.split(middleSymbol).last}|${rawValues.last.split(middleSymbol).last}');
+    // print(
+    //     '${rawValues.first.split(middleSymbol).last}|${rawValues.last.split(middleSymbol).last}');
     samplingRate = ((rawValues.length) / (finalTime - initialTime)) * 1000;
     notifyListeners();
-    print("add value over");
   }
 
   Future<void> onChangedDeviceState(BluetoothDeviceState state) async {
     switch (state) {
       case BluetoothDeviceState.connected:
         changeConnection(connectedState: true, connectingState: false);
-        callbyclick();
+        callbyclick(); //for call to the Characteristics
         return;
       case BluetoothDeviceState.connecting:
         changeConnection(connectedState: false, connectingState: true);
@@ -177,12 +180,13 @@ class BluetoothProvider extends ChangeNotifier {
     }
   }
 
+  //Switching between connections
   void changeConnection(
       {required bool connectingState, required bool connectedState}) {
     device_connected = connectedState;
     device_connecting = connectingState;
     notifyListeners();
-  }
+  } 
 
   void clearValues() {
     rawValues.clear();
@@ -190,7 +194,7 @@ class BluetoothProvider extends ChangeNotifier {
     samplingRate = 0.0;
     initialTime = -1;
     finalTime = -1;
-  }
+  } //Clear whole data after disconnecting
 
   Future<void> callbyclick() async {
     BluetoothDevice connectedDevice =
