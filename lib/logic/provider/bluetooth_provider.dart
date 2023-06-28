@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
 
+import 'package:bluetooth_ble/model/datapoint.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -25,7 +26,7 @@ class BluetoothProvider extends ChangeNotifier {
   BluetoothDevice? connectedDevice;
   bool device_connecting = false, device_connected = false;
 
-  List<String> values = [];
+  List<DataPoint> values = [];
   List<String> rawValues = [];
   double initialTime = -1, finalTime = -1;
 
@@ -42,8 +43,7 @@ class BluetoothProvider extends ChangeNotifier {
     listenConnectionState(BluetoothDevice.fromId(deviceId));
   }
 
-
-  //Start scanning of the devices 
+  //Start scanning of the devices
   Future<void> startScan() async {
     _discoverResults.clear();
     isScanning = true;
@@ -61,7 +61,7 @@ class BluetoothProvider extends ChangeNotifier {
     });
   }
 
-  //Stop the scanning  
+  //Stop the scanning
   Future<void> stopScan() async {
     await _flutterBluetooth.stopScan();
     await scanSubscription?.cancel().then((value) {
@@ -76,7 +76,8 @@ class BluetoothProvider extends ChangeNotifier {
     device_connecting = true;
     notifyListeners();
     try {
-      BluetoothDevice connectedDevice = BluetoothDevice.fromId(deviceId);    //connecting with required device
+      BluetoothDevice connectedDevice =
+          BluetoothDevice.fromId(deviceId); //connecting with required device
       connectedDevice.connect(
           autoConnect: false,
           shouldClearGattCache: true,
@@ -89,11 +90,11 @@ class BluetoothProvider extends ChangeNotifier {
 
   void listenConnectionState(BluetoothDevice connectedDevice) {
     connectionState = connectedDevice.state.listen(null);
-    connectionState?.onData(onChangedDeviceState);  //changing the state as per the connection
+    connectionState?.onData(
+        onChangedDeviceState); //changing the state as per the connection
   }
 
-
-//Disconnect device 
+//Disconnect device
   Future<void> disconnect() async {
     try {
       BluetoothDevice connectedDevice =
@@ -135,12 +136,11 @@ class BluetoothProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  //Storing values to the application and calculate sampling rate 
+  //Storing values to the application and calculate sampling rate
   void addValues(String value) {
-    if (values.length > 100) {
-      values.removeAt(0);
-    }
-    values.add(value);
+    // if (values.length > 100) {
+    //   values.removeAt(0);
+    // }
     rawValues.add(value);
     if (rawValues.first == "") {
       rawValues.removeAt(0);
@@ -154,7 +154,6 @@ class BluetoothProvider extends ChangeNotifier {
     // print(
     //     '${rawValues.first.split(middleSymbol).last}|${rawValues.last.split(middleSymbol).last}');
     samplingRate = ((rawValues.length) / (finalTime - initialTime)) * 1000;
-    notifyListeners();
   }
 
   Future<void> onChangedDeviceState(BluetoothDeviceState state) async {
@@ -186,7 +185,7 @@ class BluetoothProvider extends ChangeNotifier {
     device_connected = connectedState;
     device_connecting = connectingState;
     notifyListeners();
-  } 
+  }
 
   void clearValues() {
     rawValues.clear();
@@ -200,5 +199,13 @@ class BluetoothProvider extends ChangeNotifier {
     BluetoothDevice connectedDevice =
         await _flutterBluetooth.connectedDevices.then((value) => value.first);
     await discoverCharacteristics(connectedDevice);
+  }
+
+  void addDataPoint(DataPoint dataPoint) {
+    values.add(dataPoint);
+  }
+
+  void removeDataPoint(int index) {
+    values.removeAt(index);
   }
 }

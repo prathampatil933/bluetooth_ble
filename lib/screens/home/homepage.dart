@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:bluetooth_ble/model/datapoint.dart';
+import 'package:bluetooth_ble/screens/graph/graphwidget.dart';
 import 'package:flutter/material.dart';
 import 'package:bluetooth_ble/logic/provider/bluetooth_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -215,29 +217,35 @@ class _BluetoothPageState extends State<BluetoothPage> {
                   //     return const SizedBox();
                   //   },
                   // ),
-
+                  //SECTION FOR THE DATAPOINT VIEWING
+                  // const SizedBox(
+                  //   height: 25,
+                  // ),
+                  // const Text(
+                  //   '  First sensor     Second sensor   Seconds(milli)',
+                  //   style: TextStyle(fontSize: 16),
+                  // ),
+                  // SizedBox(
+                  //   height: 550,
+                  //   child: ListView.builder(
+                  //     itemCount: provider.values.length,
+                  //     itemBuilder: (context, index) {
+                  //       return Padding(
+                  //         padding: const EdgeInsets.all(16.0),
+                  //         child: Text(
+                  //           provider.values[index],
+                  //           //style: const TextStyle(fontSize: 32),
+                  //           style: const TextStyle(fontSize: 16),
+                  //         ),
+                  //       );
+                  //     },
+                  //   ),
+                  // ),
+                  //GRAPH
                   const SizedBox(
-                    height: 25,
+                    height: 10,
                   ),
-                  const Text(
-                    '  First sensor     Second sensor   Seconds(milli)',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  SizedBox(
-                    height: 550,
-                    child: ListView.builder(
-                      itemCount: provider.values.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                            provider.values[index],
-                            style: const TextStyle(fontSize: 32),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                  const SizedBox(height: 550, child: GraphWidget()),
                   const SizedBox(
                     height: 10,
                   ),
@@ -257,7 +265,7 @@ class _BluetoothPageState extends State<BluetoothPage> {
                           'Total count: ${provider.rawValues.length}',
                           style: const TextStyle(fontSize: 24),
                         ),
-                      )
+                      ),
                     ],
                   )
                 ],
